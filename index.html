@@ -56,14 +56,34 @@
    // const defaultApp = getApp();
     const db=getDatabase()
 
-   
 
-    navigator.geolocation.getCurrentPosition(assignPosition);
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    function showError(error) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          x.innerHTML = "User denied the request for Geolocation."
+          break;
+        case error.POSITION_UNAVAILABLE:
+          x.innerHTML = "Location information is unavailable."
+          break;
+        case error.TIMEOUT:
+          x.innerHTML = "The request to get user location timed out."
+          break;
+        case error.UNKNOWN_ERROR:
+          x.innerHTML = "An unknown error occurred."
+          break;
+      }
+    }
+        navigator.geolocation.getCurrentPosition(assignPosition,showError, {
+          enableHighAccuracy: true, // Request high precision
+          timeout: 10000,           // Set a timeout (10 seconds)
+          maximumAge: 0             // No cached data
+        });
     function assignPosition(position) {
       globalThis.latitude = position.coords.latitude;
       globalThis.longitude = position.coords.longitude;
     }
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     let name=document.getElementById("name")
 
     function AddData(){
@@ -74,9 +94,24 @@
       }).then(()=>{
         alert("data added")
       }).catch((error)=>{
-        alert("unsuccessful");
+        alert("unsuccessful data addition");
         console.log(error)
       })
+
+       function UpdateData(){
+      update(ref(db,name.value),{
+        latitude:latitude,
+        longitude:longitude
+      }).then(()=>{
+        alert("data updated")
+      }).catch((error)=>{
+        alert("unsuccessful data updation");
+        console.log(error)
+      })
+      }
+
+      var does =setInterval(UpdateData,5000)
+      setTimeout(does,5000)
     }
 
 
